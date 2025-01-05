@@ -12,6 +12,8 @@
 
 ## For suggestions or to report a bug, please contact [telegram](https://t.me/tor_dev)
 
+## [Support the development 💙](https://support-me-ruby.vercel.app/)
+
 ## Installation
 
 1. Clone the repository:
@@ -71,4 +73,3 @@ This bot is for educational purposes only. Use at your own risk and responsibili
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
