@@ -240,6 +240,7 @@ class GameBot {
                 console.log(
                     `${colors.magenta}Processing authorization ${i + 1}/${this.authorizations.length}${colors.reset}`
                 );
+                console.log(`${colors.green}Proxy: ${this.proxies[i]} ${colors.reset}`);
 
                 const userInfo = await this.getUserInfo();
                 console.log(`${colors.green}User info retrieved for: ${userInfo.tgUsername}${colors.reset}`);
