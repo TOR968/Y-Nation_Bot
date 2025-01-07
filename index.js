@@ -105,6 +105,10 @@ class GameBot {
         return await this.makeRequest("GET", `${this.baseUrl}/v1/learn/sections`);
     }
 
+    async dailyLogin() {
+        return await this.makeRequest("POST", `${this.baseUrl}/v1/daily/dailyLogin`, {});
+    }
+
     async startFarming() {
         return await this.makeRequest("POST", `${this.baseUrl}/v1/farming/startOrRestart`, {});
     }
@@ -247,6 +251,30 @@ class GameBot {
                     );
                 } else {
                     console.log(`${colors.red}Farming failed${colors.reset}`);
+                }
+
+                const dailyLoginResponse = await this.dailyLogin();
+
+                if (!dailyLoginResponse.isClaimed) {
+                    console.log(
+                        `${colors.green}Daily login successful, reward received: ${
+                            dailyLoginResponse.rewardsList[
+                                dailyLoginResponse.days - 1 > 45
+                                    ? 45
+                                    : dailyLoginResponse.days - 1
+                            ].reward.value
+                        }${colors.reset}`
+                    );
+                } else {
+                    console.log(
+                        `${colors.yellow}The daily reward was already received today ${
+                            dailyLoginResponse.rewardsList[
+                                dailyLoginResponse.days - 1 > 45
+                                    ? 45
+                                    : dailyLoginResponse.days - 1
+                            ].reward.value
+                        } ${colors.reset}`
+                    );
                 }
 
                 await this.processAllTasks();
