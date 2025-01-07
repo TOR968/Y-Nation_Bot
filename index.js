@@ -33,8 +33,14 @@ class GameBot {
             const authData = await fs.readFile("data.txt", "utf8");
             const proxyData = await fs.readFile("proxy.txt", "utf8");
 
-            this.authorizations = authData.split("\n").filter((line) => line.trim());
-            this.proxies = proxyData.split("\n").filter((line) => line.trim());
+            this.authorizations = authData
+                .split("\n")
+                .map((line) => line.trim())
+                .filter((line) => line);
+            this.proxies = proxyData
+                .split("\n")
+                .map((line) => line.trim())
+                .filter((line) => line);
 
             console.log(
                 `${colors.green}Initialized with ${this.authorizations.length} authorizations and ${this.proxies.length} proxies${colors.reset}`
@@ -160,7 +166,7 @@ class GameBot {
 
             if (stats.lessons.available > 0) {
                 let sectionsData = await this.getLearnSections();
-                
+
                 while (true) {
                     if (!sectionsData || !sectionsData.sections) {
                         console.log(`${colors.red}No sections data available${colors.reset}`);
@@ -178,7 +184,7 @@ class GameBot {
                             if (lesson.status === "READY") {
                                 foundReadyLesson = true;
                                 console.log(`${colors.blue}Processing lesson: ${lesson.title}${colors.reset}`);
-                                
+
                                 const payload = {
                                     lesson_id: lesson.id,
                                     answers: lesson.questions.map((question) => ({
@@ -204,7 +210,7 @@ class GameBot {
                                 }
                             }
                         }
-                        
+
                         if (foundReadyLesson) break;
                     }
 
