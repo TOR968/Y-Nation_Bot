@@ -239,6 +239,19 @@ class GameBot {
         }
     }
 
+    canBoost = (balanceResponse) => {
+        const farming = balanceResponse?.farming;
+        const currentBoost = farming?.currentBoost;
+
+        if (!currentBoost?.nextAvailableFrom) return true;
+
+        if (currentBoost.nextAvailableFrom?.seconds) {
+            return currentBoost.nextAvailableFrom.seconds < Math.floor(Date.now() / 1000);
+        }
+
+        return false;
+    };
+
     async run() {
         try {
             await this.initialize();
@@ -275,9 +288,9 @@ class GameBot {
 
                 const balanceResponse = await this.getBalance();
 
-                if (balanceResponse.farming.currentBoost.nextAvailableFrom.seconds < Math.floor(Date.now() / 1000)) {
+                if (this.canBoost(balanceResponse)) {
                     await this.boostStart();
-                    `${colors.green}Boost started${colors.reset}`;
+                    console.log(`${colors.green}Boost started${colors.reset}`);
                 } else {
                     console.log(`${colors.yellow}Boost already started${colors.reset}`);
                 }
