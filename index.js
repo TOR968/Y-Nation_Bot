@@ -105,6 +105,10 @@ class GameBot {
         return await this.makeRequest("GET", `${this.baseUrl}/v1/learn/sections`);
     }
 
+    async getBalance() {
+        return await this.makeRequest("GET", `${this.baseUrl}/v1/user/balance`);
+    }
+
     async dailyLogin() {
         return await this.makeRequest("POST", `${this.baseUrl}/v1/daily/dailyLogin`, {});
     }
@@ -123,6 +127,10 @@ class GameBot {
 
     async claimLesson(payload) {
         return await this.makeRequest("POST", `${this.baseUrl}/v1/learn/claim_lesson`, payload);
+    }
+
+    async boostStart() {
+        return await this.makeRequest("POST", `${this.baseUrl}/v1/farming/boostStart`, {});
     }
 
     async processAllTasks() {
@@ -245,24 +253,13 @@ class GameBot {
                 const userInfo = await this.getUserInfo();
                 console.log(`${colors.green}User info retrieved for: ${userInfo.tgUsername}${colors.reset}`);
 
-                const farmingResponse = await this.startFarming();
-                if (farmingResponse) {
-                    console.log(
-                        `${colors.green}Farming started, reward received: ${farmingResponse.reward.value}${colors.reset}`
-                    );
-                } else {
-                    console.log(`${colors.red}Farming failed${colors.reset}`);
-                }
-
                 const dailyLoginResponse = await this.dailyLogin();
 
                 if (!dailyLoginResponse.isClaimed) {
                     console.log(
                         `${colors.green}Daily login successful, reward received: ${
                             dailyLoginResponse.rewardsList[
-                                dailyLoginResponse.days - 1 > 45
-                                    ? 45
-                                    : dailyLoginResponse.days - 1
+                                dailyLoginResponse.days - 1 > 45 ? 45 : dailyLoginResponse.days - 1
                             ].reward.value
                         }${colors.reset}`
                     );
@@ -270,12 +267,29 @@ class GameBot {
                     console.log(
                         `${colors.yellow}The daily reward was already received today ${
                             dailyLoginResponse.rewardsList[
-                                dailyLoginResponse.days - 1 > 45
-                                    ? 45
-                                    : dailyLoginResponse.days - 1
+                                dailyLoginResponse.days - 1 > 45 ? 45 : dailyLoginResponse.days - 1
                             ].reward.value
                         } ${colors.reset}`
                     );
+                }
+
+                const balanceResponse = await this.getBalance();
+
+                if (balanceResponse.farming.currentBoost.nextAvailableFrom.seconds < Math.floor(Date.now() / 1000)) {
+                    await this.boostStart();
+                    `${colors.green}Boost started${colors.reset}`;
+                } else {
+                    console.log(`${colors.yellow}Boost already started${colors.reset}`);
+                }
+
+                const farmingResponse = await this.startFarming();
+
+                if (farmingResponse) {
+                    console.log(
+                        `${colors.green}Farming started, reward received: ${farmingResponse.reward.value}${colors.reset}`
+                    );
+                } else {
+                    console.log(`${colors.red}Farming failed${colors.reset}`);
                 }
 
                 await this.processAllTasks();
