@@ -3,6 +3,7 @@
 | ✅  | Feature                     |
 | --- | --------------------------- |
 | ✅  | Daily rewards automation    |
+| ✅  | Boost start automation    |
 | ✅  | Multiple account support    |
 | ✅  | Proxy support (SOCKS/HTTP)  |
 | ✅  | Quest automation            |
