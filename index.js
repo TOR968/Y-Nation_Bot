@@ -268,21 +268,26 @@ class GameBot {
 
                 const dailyLoginResponse = await this.dailyLogin();
 
+                const getRewardValue = (dailyLoginResponse) => {
+                    try {
+                        const dayIndex = dailyLoginResponse.days - 1 > 45 ? 45 : dailyLoginResponse.days - 1;
+                        return dailyLoginResponse?.rewardsList?.[dayIndex]?.reward?.value || "N/A";
+                    } catch (error) {
+                        return "N/A";
+                    }
+                };
+
                 if (!dailyLoginResponse.isClaimed) {
                     console.log(
-                        `${colors.green}Daily login successful, reward received: ${
-                            dailyLoginResponse.rewardsList[
-                                dailyLoginResponse.days - 1 > 45 ? 45 : dailyLoginResponse.days - 1
-                            ].reward.value
-                        }${colors.reset}`
+                        `${colors.green}Daily login successful, reward received: ${getRewardValue(dailyLoginResponse)}${
+                            colors.reset
+                        }`
                     );
                 } else {
                     console.log(
-                        `${colors.yellow}The daily reward was already received today ${
-                            dailyLoginResponse.rewardsList[
-                                dailyLoginResponse.days - 1 > 45 ? 45 : dailyLoginResponse.days - 1
-                            ].reward.value
-                        } ${colors.reset}`
+                        `${colors.yellow}The daily reward was already received today ${getRewardValue(
+                            dailyLoginResponse
+                        )} ${colors.reset}`
                     );
                 }
 
