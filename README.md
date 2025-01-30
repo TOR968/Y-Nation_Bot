@@ -56,7 +56,7 @@
 2. Open Developer Tools (F12)
 3. Go to Application tab
 4. Look for the `tgWebAppData` parameter
-5. Copy the entire value and paste it in `data.txt`
+5. Copy the entire value and paste it in `data.txt` ⚠️ **!!! must be updated daily**
 
 ![How to get tgInitData](./img/initParams.png)
 
