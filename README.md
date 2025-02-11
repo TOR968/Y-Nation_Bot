@@ -10,6 +10,8 @@
 | ✅  | Lesson automation           |
 | ✅  | User-Agent rotation         |
 | ✅  | Scheduled runs              |
+| ✅  | Auto email generation              |
+| ✅  | Auto email verification              |
 
 ## For suggestions or to report a bug, please contact [telegram](https://t.me/tor_dev)
 
@@ -47,6 +49,7 @@
     ```json
     {
         "tasksToSkip": ["Task 1", "Task 2"], // List of tasks to skip. Tasks that can only be performed manually
+        "autoEmailVerification": true // If set to (true), email will be automatically generated and verified. The link to the email can be found in the `emails.txt` file. If set to (false), the task with email verification will be skipped
     }
     ```
 
@@ -56,7 +59,7 @@
 2. Open Developer Tools (F12)
 3. Go to Application tab
 4. Look for the `tgWebAppData` parameter
-5. Copy the entire value and paste it in `data.txt` ⚠️ **!!! must be updated daily**
+5. Copy the entire value and paste it in `data.txt`
 
 ![How to get tgInitData](./img/initParams.png)
 

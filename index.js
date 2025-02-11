@@ -3,6 +3,8 @@ const axios = require("axios");
 const { scheduleNextRun } = require("./utils/schedule");
 const sleep = require("./utils/sleep");
 const getRandomNumber = require("./utils/randomNumber");
+const generateEmail = require("./utils/emailGenerator");
+const getVerificationCode = require("./utils/emailVerificationService");
 const { HttpsProxyAgent } = require("https-proxy-agent");
 const { SocksProxyAgent } = require("socks-proxy-agent");
 const UserAgentManager = require("./utils/userAgentManager");
@@ -21,6 +23,7 @@ class GameBot {
     constructor() {
         this.baseUrl = "https://ref-app-api.prod.y.info";
         this.taskToSkip = null;
+        this.autoEmail = false;
         this.authorizations = [];
         this.proxies = [];
         this.currentAuthIndex = 0;
@@ -30,6 +33,7 @@ class GameBot {
         try {
             const configData = await fs.readFile("./config.json", "utf8");
             this.taskToSkip = JSON.parse(configData).tasksToSkip;
+            this.autoEmail = JSON.parse(configData).autoEmailVerification;
             const authData = await fs.readFile("data.txt", "utf8");
             const proxyData = await fs.readFile("proxy.txt", "utf8");
 
@@ -133,6 +137,17 @@ class GameBot {
         return await this.makeRequest("POST", `${this.baseUrl}/v1/farming/boostStart`, {});
     }
 
+    async startEmailTask(newEmail) {
+        return await this.makeRequest("POST", `${this.baseUrl}/v1/tasks/email/send`, { email: newEmail });
+    }
+
+    async verifyEmailTask(newEmail, verifyCode) {
+        return await this.makeRequest("POST", `${this.baseUrl}/v1/tasks/email/verify`, {
+            email: newEmail,
+            code: verifyCode,
+        });
+    }
+
     async processAllTasks() {
         try {
             console.log(`${colors.magenta}Starting task processing${colors.reset}`);
@@ -146,6 +161,12 @@ class GameBot {
                 if (task.status === "NOT_STARTED") {
                     console.log(`${colors.yellow}Starting task: ${task.title}${colors.reset}`);
                     await this.startTask(task.id);
+
+                    await sleep(getRandomNumber(2000, 5000));
+                }
+
+                if (task.id === "bf72e2c9-5535-4992-a46f-c21d9532bbe2" && task.status === "WAITING" && this.autoEmail) {
+                    await this.emailTaskProcessing(task);
 
                     await sleep(getRandomNumber(2000, 5000));
                 }
@@ -170,6 +191,34 @@ class GameBot {
         } catch (error) {
             console.log(`${colors.red}Error processing tasks: ${error.message}${colors.reset}`);
         }
+    }
+
+    async emailTaskProcessing(task) {
+        console.log(`${colors.yellow}Starting email task: ${task.title}${colors.reset}`);
+
+        const newEmail = await this.getNewEmail();
+        console.log("🚀 ~ GameBot ~ emailTaskProcessing ~ newEmail:", newEmail);
+        await this.startEmailTask(newEmail);
+        await sleep(getRandomNumber(2000, 5000));
+
+        console.log(`${colors.yellow}Waiting for verification email...${colors.reset}`);
+
+        await sleep(getRandomNumber(10000, 15000));
+
+        const verificationCode = await getVerificationCode(newEmail);
+        if (verificationCode) {
+            await this.verifyEmailTask(newEmail, verificationCode);
+            console.log(`${colors.green}Email verified successfully${colors.reset}`);
+            await sleep(getRandomNumber(2000, 5000));
+        } else {
+            console.log(`${colors.red}Could not get verification code${colors.reset}`);
+        }
+    }
+
+    async getNewEmail() {
+        const email = await generateEmail();
+        console.log("Generated email:", email);
+        return email;
     }
 
     async processLearning() {

@@ -1,3 +1,4 @@
 {
-    "tasksToSkip": ["Boost Y Channel", "Join Y Nation chat", "Join Y Nation news channel"]
+    "tasksToSkip": ["Boost Y Channel", "Join Y Nation chat", "Join Y Nation news channel"],
+    "autoEmailVerification": true
 }
