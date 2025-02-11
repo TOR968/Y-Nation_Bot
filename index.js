@@ -19,7 +19,7 @@ const colors = {
 
 class GameBot {
     constructor() {
-        this.baseUrl = "https://ref-app-api.etherean.app";
+        this.baseUrl = "https://ref-app-api.prod.y.info";
         this.taskToSkip = null;
         this.authorizations = [];
         this.proxies = [];
